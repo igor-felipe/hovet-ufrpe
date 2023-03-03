@@ -1,4 +1,4 @@
-import 'dotenv/config'
-import './config/module-alias'
+import "dotenv/config";
+import "./config/module-alias";
 
-import './app'
+import "./app";
