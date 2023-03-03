@@ -104,3 +104,12 @@ dist
 .tern-port
 
 TODO.md
+
+# from yarn 2
+.pnp.*
+.yarn/*
+!.yarn/patches
+!.yarn/plugins
+!.yarn/releases
+!.yarn/sdks
+!.yarn/versions
