@@ -5,12 +5,18 @@ module.exports = {
   },
   extends: [
     'plugin:jest/recommended',
-    'standard',
+    "eslint:recommended",
+    "plugin:@typescript-eslint/eslint-recommended",
+    "plugin:@typescript-eslint/recommended",
+    "eslint-config-airbnb-base", //you can omit `eslint-config-`
+    "airbnb-typescript/base",
+    "plugin:prettier/recommended"
   ],
   parser: '@typescript-eslint/parser',
   parserOptions: {
     ecmaVersion: 12,
     sourceType: 'module',
+    project: "./tsconfig.json"
   },
   plugins: [
     '@typescript-eslint',
