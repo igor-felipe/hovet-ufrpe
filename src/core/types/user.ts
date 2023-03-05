@@ -1,7 +1,10 @@
+import * as t from "io-ts";
+import { Email } from "./scalar";
+
 export type User = {
   id: string;
   name: string;
-  email: string;
+  email: t.TypeOf<typeof Email>;
   cpf: string;
   password: string;
   status: boolean;
