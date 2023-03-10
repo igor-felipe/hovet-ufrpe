@@ -2,13 +2,12 @@
 
 module.exports = {
   preset: 'ts-jest',
-  globals: {
-    'ts-jest': {
-      isolatedModules: true,
-    },
+  transform: {
+    '^.+\\.(ts|tsx)?$': 'ts-jest',
   },
+  testEnvironment: 'node',
   modulePathIgnorePatterns: ['<rootDir>/dist/'],
   moduleNameMapper: {
     '@/(.*)': '<rootDir>/src/$1',
   },
-}
+};
