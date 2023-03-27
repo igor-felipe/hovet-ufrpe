@@ -10,7 +10,7 @@
     "start": "node dist/src/index.js",
     "dev": "nodemon --exec sucrase-node src/index.ts",
     "test": "jest --passWithNoTests && yarn test:integration",
-    "test:watch": "jest --watch",
+    "test:watch": "jest --watch --clearMocks",
     "test:integration": "jest --passWithNoTests --config jest.config.integration.js",
     "test:integration:watch": " yarn test:integration --watch",
     "lint": "eslint . --ext js,ts",
@@ -24,13 +24,9 @@
   "dependencies": {
     "dotenv": "16.0.3",
     "fp-ts": "2.13.1",
-    "io-ts": "^2.2.20",
-    "io-ts-types": "^0.5.19",
     "isemail": "^3.2.0",
     "module-alias": "2.2.2",
-    "monocle-ts": "^2.3.13",
-    "newtype-ts": "^0.3.5",
-    "upgrade": "^1.1.0"
+    "zod": "^3.21.4"
   },
   "devDependencies": {
     "@commitlint/cli": "^17.4.4",
