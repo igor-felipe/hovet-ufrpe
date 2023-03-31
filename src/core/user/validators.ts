@@ -2,10 +2,6 @@ import { flow } from "fp-ts/lib/function";
 import { z } from "zod";
 import * as M from "./errorMessages";
 
-function fields<T>(array: (keyof T)[]): Partial<{ [key in keyof T]: true }> {
-  return array.reduce((acc, cur) => ({ ...acc, [cur]: true }), {});
-}
-
 const isCpf = (cpf: string) => {
   // regex: only 11 digits, not all the same
   if (/^(\d)(?!\1+$)\d{10}$/.test(cpf) === false) return false;
@@ -74,13 +70,20 @@ export const userValidator = z
   .strict();
 
 export type CreateUser = z.infer<typeof createUserValidator>;
-export const createUserValidator = userValidator.omit({
-  createdAt: true,
-  status: true,
+export const createUserValidator = userValidator.pick({
+  password: true,
+  email: true,
+  cpf: true,
+  name: true,
 });
 
 export type UpdateUserData = z.infer<typeof updateUserValidator>;
-export const updateUserValidator = createUserValidator;
+export const updateUserValidator = userValidator
+  .omit({
+    createdAt: true,
+    currentUserId: true,
+  })
+  .partial();
 
 export type SingIn = z.infer<typeof singIn>;
-export const singIn = userValidator.pick(fields<User>(["email", "password"]));
+export const singIn = userValidator.pick({ email: true, password: true });

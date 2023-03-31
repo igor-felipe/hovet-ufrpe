@@ -14,31 +14,33 @@ const registerFail: OutsideRegisterUser<never> = async () => {
 };
 
 const user: CreateUser = {
-  id: "1",
   name: "Keanu Charles Reeves",
   email: "Keanu@gmail.com",
   cpf: "11144477735",
   password: "Keanu123!",
-  currentUserId: "Admin",
 };
 
 const userWithWrongName: CreateUser = {
-  id: "1",
   name: "Keanu",
   email: "Keanu@gmail.com",
   cpf: "11144477735",
   password: "Keanu123!",
-  currentUserId: "Admin",
 };
 
 const userWithWrongEmailAndPassword: CreateUser = {
-  id: "1",
   name: "Keanu Charles Reeves",
   email: "",
   cpf: "11144477735",
   password: "Keanu123",
-  currentUserId: "Admin",
 };
+
+it("Should return a Left if register function throws an error", async () => {
+  return pipe(
+    user,
+    registerUser(registerFail),
+    mapAll((error) => expect(error).toEqual(new Error("External error!"))),
+  )();
+});
 
 it("Should register a user properly", async () => {
   return pipe(
@@ -70,13 +72,5 @@ it("Should not accept a register from a user with invalid email and/or password"
         password: [M.noSpecialSymbolFound().message],
       }),
     ),
-  )();
-});
-
-it("Should return a Left if register function throws an error", async () => {
-  return pipe(
-    user,
-    registerUser(registerFail),
-    mapAll((error) => expect(error).toEqual(new Error("External error!"))),
   )();
 });
