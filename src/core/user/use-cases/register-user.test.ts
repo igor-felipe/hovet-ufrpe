@@ -1,15 +1,15 @@
 import { pipe } from "fp-ts/function";
-import { registerUser, OutsideRegisterUser } from "./register";
+import { register, OutsideRegister } from "./register-user";
 import { CreateUser } from "@/core/user/validators";
 import { mapAll } from "@/config/tests/fixtures";
 import { ValidationError } from "@/helpers/errors";
 import * as M from "@/core/user/errorMessages";
 
-const registerOk: OutsideRegisterUser<string> = async (user) => {
+const registerOk: OutsideRegister<string> = async (user) => {
   return user.name;
 };
 
-const registerFail: OutsideRegisterUser<never> = async () => {
+const registerFail: OutsideRegister<never> = async () => {
   throw new Error("External error!");
 };
 
@@ -37,7 +37,7 @@ const userWithWrongEmailAndPassword: CreateUser = {
 it("Should return a Left if register function throws an error", async () => {
   return pipe(
     user,
-    registerUser(registerFail),
+    register(registerFail),
     mapAll((error) => expect(error).toEqual(new Error("External error!"))),
   )();
 });
@@ -45,7 +45,7 @@ it("Should return a Left if register function throws an error", async () => {
 it("Should register a user properly", async () => {
   return pipe(
     user,
-    registerUser(registerOk),
+    register(registerOk),
     mapAll((result) => expect(result).toBe(user.name)),
   )();
 });
@@ -53,7 +53,7 @@ it("Should register a user properly", async () => {
 it("Should not accept a register from a user with invalid name", async () => {
   return pipe(
     userWithWrongName,
-    registerUser(registerOk),
+    register(registerOk),
     mapAll((error) =>
       expect((error as ValidationError).details).toEqual({
         name: [M.incorrectSize(10, 100).message],
@@ -65,7 +65,7 @@ it("Should not accept a register from a user with invalid name", async () => {
 it("Should not accept a register from a user with invalid email and/or password", async () => {
   return pipe(
     userWithWrongEmailAndPassword,
-    registerUser(registerOk),
+    register(registerOk),
     mapAll((error) =>
       expect((error as ValidationError).details).toEqual({
         email: ["Invalid email"],

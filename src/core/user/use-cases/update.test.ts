@@ -1,6 +1,6 @@
 import { pipe } from "fp-ts/function";
 import { UpdateUserData } from "@/core/user/validators";
-import { OutsideUpdateUser, updateUser } from "@/core/user/useCases/update";
+import { OutsideUpdateUser, updateUser } from "@/core/user/use-cases/update";
 import { mapAll } from "@/config/tests/fixtures";
 import { ValidationError } from "@/helpers/errors";
 import * as M from "@/core/user/errorMessages";

@@ -5,13 +5,14 @@ import { CreateUser, createUserValidator } from "@/core/user/validators";
 import { toValidationError } from "@/helpers/toValidationError";
 import { ValidationError } from "@/helpers/errors";
 
-export type OutsideRegisterUser<A> = (data: CreateUser) => Promise<A>;
+export type OutsideRegister<A> = (data: CreateUser) => Promise<A>;
 
-type RegisterUser = <A>(
-  outsideRegister: OutsideRegisterUser<A>,
+export type Register = <A>(
+  outsideRegister: OutsideRegister<A>,
 ) => (data: CreateUser) => TE.TaskEither<Error | ValidationError, A>;
 
-export const registerUser: RegisterUser = (outsideRegister) => (data) => {
+export const register: Register = (outsideRegister) => (data) => {
+  console.log("register");
   return pipe(
     data,
     toValidationError(createUserValidator),
