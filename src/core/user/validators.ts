@@ -87,3 +87,5 @@ export const updateUserValidator = userValidator
 
 export type SingIn = z.infer<typeof singIn>;
 export const singIn = userValidator.pick({ email: true, password: true });
+
+export type UserWithoutPassword = Omit<User, "password">;
