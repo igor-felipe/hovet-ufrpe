@@ -19,6 +19,14 @@
     },
     {
       "type": "node-terminal",
+      "name": "server http",
+      "request": "launch",
+      "command": "ts-node -- ${workspaceFolder}/src/index.ts",
+      "cwd": "${fileDirname}",
+      "sourceMaps": true, 
+    },
+    {
+      "type": "node-terminal",
       "name": "Debug Current Test File (npm run test)",
       "request": "launch",
       "command": "npm run test -- ${fileBasenameNoExtension}",
