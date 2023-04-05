@@ -15,6 +15,7 @@
     "test:integration:watch": " yarn test:integration --watch",
     "lint": "eslint . --ext js,ts",
     "lint:fix": "eslint --fix . --ext js,ts",
+    "lint:fix:cache": "eslint --fix --cache --ext js,ts",
     "type-check": "tsc --project tsconfig.json --pretty --noEmit",
     "prepare": "husky install",
     "build": "tsc",
