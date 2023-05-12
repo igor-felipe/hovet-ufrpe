@@ -1,6 +1,6 @@
 import { pipe } from "fp-ts/function";
 import { mapAll, toTaskEither } from "@/config/tests/fixtures";
-import { userValidator } from "./validators";
+import { userValidatorBase } from "./validators";
 import * as M from "./errorMessages";
 
 const invalidInput = ["Invalid input"];
@@ -20,7 +20,7 @@ it.each([
   async (email: any, expectedErrors) => {
     return pipe(
       { email },
-      toTaskEither(userValidator.pick({ email: true })),
+      toTaskEither(userValidatorBase.pick({ email: true })),
       mapAll((errors) =>
         expect(errors).toStrictEqual({
           email: expectedErrors,
@@ -42,7 +42,7 @@ it.each([
   async (cpf: any, expectedErrors) => {
     return pipe(
       { cpf },
-      toTaskEither(userValidator.pick({ cpf: true })),
+      toTaskEither(userValidatorBase.pick({ cpf: true })),
       mapAll((errors) => expect(errors).toStrictEqual({ cpf: expectedErrors })),
     )();
   },
@@ -59,7 +59,7 @@ it.each([
   async (name: any, expectedErrors) => {
     return pipe(
       { name },
-      toTaskEither(userValidator.pick({ name: true })),
+      toTaskEither(userValidatorBase.pick({ name: true })),
       mapAll((errors) =>
         expect(errors).toStrictEqual({ name: expectedErrors }),
       ),
@@ -82,7 +82,7 @@ it.each([
   async (password: any, expectedErrors) => {
     return pipe(
       { password },
-      toTaskEither(userValidator.pick({ password: true })),
+      toTaskEither(userValidatorBase.pick({ password: true })),
       mapAll((errors) =>
         expect(errors).toStrictEqual({ password: expectedErrors }),
       ),
@@ -92,19 +92,19 @@ it.each([
 
 it.each([
   [undefined, required],
-  [{}, ["Expected 'able' | 'disabled', received object"]],
-  ["able", "able"],
+  [{}, ["Expected 'enable' | 'disabled', received object"]],
+  ["enable", "enable"],
   ["disabled", "disabled"],
   [
     "aeeee@12",
-    ["Invalid enum value. Expected 'able' | 'disabled', received 'aeeee@12'"],
+    ["Invalid enum value. Expected 'enable' | 'disabled', received 'aeeee@12'"],
   ],
 ])(
   "Should validate status '%s' with errors '%s'",
   async (status: any, expectedErrors) => {
     return pipe(
       { status },
-      toTaskEither(userValidator.pick({ status: true })),
+      toTaskEither(userValidatorBase.pick({ status: true })),
       mapAll((errors) =>
         expect(errors).toStrictEqual({ status: expectedErrors }),
       ),

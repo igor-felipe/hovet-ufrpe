@@ -22,8 +22,8 @@ const isCpf = (cpf: string) => {
   const tenthDigit = calculateDigit(first9digits);
   if (tenthDigit !== Number(cpf[9])) return false;
 
-  const eleventh = calculateDigit(first9digits + tenthDigit);
-  if (eleventh !== Number(cpf[10])) return false;
+  const eleventhDigit = calculateDigit(first9digits + tenthDigit);
+  if (eleventhDigit !== Number(cpf[10])) return false;
 
   return true;
 };
@@ -38,25 +38,33 @@ const passwordValidator = z
   .regex(
     /^(?=.*[~`!@#$%^&*()--+={}[\]|\\:;"'<>,.?/_₹])/,
     M.noSpecialSymbolFound(),
-  );
+  )
+  .brand<"Password">();
 
-const idValidator = z.string().min(1);
-export const emailValidator = z.string().email();
-const cpfValidator = z.string().refine((val) => isCpf(val));
-const nameValidator = z.string().regex(/^.{10,100}$/, M.incorrectSize(10, 100));
+const idValidator = z.string().min(1).brand<"Id">();
+export const emailValidator = z.string().email().brand<"Email">();
+const cpfValidator = z
+  .string()
+  .refine((val) => isCpf(val))
+  .brand<"Cpf">();
+const nameValidator = z
+  .string()
+  .regex(/^.{10,100}$/, M.incorrectSize(10, 100))
+  .brand<"Name">();
 
 export const userStatus = {
-  ACTIVATED: "able",
+  ACTIVATED: "enable",
   DEACTIVATED: "disabled",
 } as const;
 
 export type UserStatus = typeof userStatus;
-const statusValidator = z.enum([userStatus.ACTIVATED, userStatus.DEACTIVATED]);
+const statusValidator = z
+  .enum([userStatus.ACTIVATED, userStatus.DEACTIVATED])
+  .brand<"Status">();
 
 const createdAtValidator = z.date();
 
-export type User = z.infer<typeof userValidator>;
-export const userValidator = z
+export const userValidatorBase = z
   .object({
     id: idValidator,
     password: passwordValidator,
@@ -69,23 +77,34 @@ export const userValidator = z
   })
   .strict();
 
-export type CreateUser = z.infer<typeof createUserValidator>;
-export const createUserValidator = userValidator.pick({
-  password: true,
-  email: true,
-  cpf: true,
-  name: true,
-});
+export const userValidator = userValidatorBase.brand<"User">();
+export type User = z.infer<typeof userValidator>;
 
-export type UpdateUserData = z.infer<typeof updateUserValidator>;
-export const updateUserValidator = userValidator
+export const createUserValidator = userValidatorBase
+  .pick({
+    password: true,
+    email: true,
+    cpf: true,
+    name: true,
+  })
+  .brand<"CreateUser">();
+export type CreateUser = z.infer<typeof createUserValidator>;
+
+export const updateUserValidator = userValidatorBase
   .omit({
     createdAt: true,
     currentUserId: true,
   })
-  .partial();
+  .partial()
+  .brand<"UpdateUserData">();
+export type UpdateUserData = z.infer<typeof updateUserValidator>;
 
+export const singIn = userValidatorBase
+  .pick({ email: true, password: true })
+  .brand<"SingIn">();
 export type SingIn = z.infer<typeof singIn>;
-export const singIn = userValidator.pick({ email: true, password: true });
 
-export type UserWithoutPassword = Omit<User, "password">;
+export const userWithoutPassword = userValidatorBase
+  .omit({ password: true })
+  .brand<"UserWithoutPassword">();
+export type UserWithoutPassword = z.infer<typeof userWithoutPassword>;

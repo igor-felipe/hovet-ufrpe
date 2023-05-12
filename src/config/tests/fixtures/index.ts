@@ -21,3 +21,7 @@ export const toTaskEither =
         ? TE.right(result.data)
         : TE.left(result.error.flatten().fieldErrors),
     );
+
+export function unsafe<T>(value: unknown): T {
+  return value as T;
+}

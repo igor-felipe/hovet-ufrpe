@@ -1,7 +1,7 @@
 import { pipe } from "fp-ts/function";
 import { UpdateUserData } from "@/core/user/validators";
 import { OutsideUpdateUser, updateUser } from "@/core/user/use-cases/update";
-import { mapAll } from "@/config/tests/fixtures";
+import { mapAll, unsafe } from "@/config/tests/fixtures";
 import { ValidationError } from "@/helpers/errors";
 import * as M from "@/core/user/errorMessages";
 
@@ -13,25 +13,25 @@ const updateFail: OutsideUpdateUser<never> = async () => {
   throw new Error("External error!");
 };
 
-const user: UpdateUserData = {
+const user: UpdateUserData = unsafe({
   name: "Keanu Charles Reeves",
   email: "Keanu@gmail.com",
   password: "Keanu123!",
-};
+});
 
-const userWithWrongName: UpdateUserData = {
+const userWithWrongName: UpdateUserData = unsafe({
   name: "Keanu",
   email: "Keanu@gmail.com",
   cpf: "11144477735",
   password: "Keanu123!",
-};
+});
 
-const userWithWrongEmailAndPassword: UpdateUserData = {
+const userWithWrongEmailAndPassword: UpdateUserData = unsafe({
   name: "Keanu Charles Reeves",
   email: "",
   cpf: "11144477735",
   password: "Keanu123",
-};
+});
 
 it("Should return a Left if register function throws an error", async () => {
   return pipe(
@@ -53,11 +53,12 @@ it("Should not accept a register from a user with invalid name", async () => {
   return pipe(
     userWithWrongName,
     updateUser(updateOk),
-    mapAll((error) =>
+    mapAll((error) => {
+      expect(error).toBeInstanceOf(ValidationError);
       expect((error as ValidationError).details).toEqual({
         name: [M.incorrectSize(10, 100).message],
-      }),
-    ),
+      });
+    }),
   )();
 });
 
@@ -65,11 +66,12 @@ it("Should not accept a register from a user with invalid email and/or password"
   return pipe(
     userWithWrongEmailAndPassword,
     updateUser(updateOk),
-    mapAll((error) =>
+    mapAll((error) => {
+      expect(error).toBeInstanceOf(ValidationError);
       expect((error as ValidationError).details).toEqual({
         email: ["Invalid email"],
         password: [M.noSpecialSymbolFound().message],
-      }),
-    ),
+      });
+    }),
   )();
 });

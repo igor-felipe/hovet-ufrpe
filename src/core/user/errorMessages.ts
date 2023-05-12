@@ -7,17 +7,17 @@ export const noUppercaseCharacterFound = () => ({
 });
 
 export const noLowercaseCharacterFound = () => ({
-  message: ` must have at least one Lowercase Character.`,
+  message: `must have at least one Lowercase Character.`,
 });
 
 export const noDigitFound = () => ({
-  message: ` must have at least one Digit.`,
+  message: `must have at least one Digit.`,
 });
 
 export const noSpecialSymbolFound = () => ({
-  message: ` must have at least one Special Symbol.`,
+  message: `must have at least one Special Symbol.`,
 });
 
 export const forbiddenSpaces = () => ({
-  message: ` cannot contain spaces.`,
+  message: `cannot contain spaces.`,
 });
