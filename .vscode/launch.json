@@ -1,6 +1,7 @@
 {
   "version": "0.2.0",
   "configurations": [
+
   
     {
       "type": "node-terminal",
@@ -24,6 +25,7 @@
       "command": "ts-node -- ${workspaceFolder}/src/index.ts",
       "cwd": "${fileDirname}",
       "sourceMaps": true, 
+      "envFile": "${workspaceFolder}/.env"
     },
     {
       "type": "node-terminal",
