@@ -3,8 +3,8 @@ import { pipe } from "fp-ts/function";
 import * as TE from "fp-ts/TaskEither";
 import morgan from "morgan";
 import helmet from "helmet";
-import { register } from "@/adapters/use-cases/user/register-user-adapter";
-import { userRegister } from "@/adapters/ports/db";
+import { registerUser } from "@/adapters/use-cases/user/register-user-adapter";
+import { createUserInDB } from "@/adapters/ports/db";
 import { getErrorDetails } from "@/helpers/errors";
 
 const app = express();
@@ -18,7 +18,7 @@ const { PORT } = process.env;
 app.post("/api/user", async (req: Request, res: Response) => {
   return pipe(
     req.body,
-    register(userRegister),
+    registerUser(createUserInDB),
     TE.map((result) => res.json(result)),
     TE.mapLeft((error) => res.status(422).json(getErrorDetails(error))),
   )();
@@ -27,7 +27,7 @@ app.post("/api/user", async (req: Request, res: Response) => {
 app.put("/api/user", async (req: Request, res: Response) => {
   return pipe(
     req.body,
-    register(userRegister),
+    registerUser(createUserInDB),
     TE.map((result) => res.json(result)),
     TE.mapLeft((error) => res.status(422).json(getErrorDetails(error))),
   )();

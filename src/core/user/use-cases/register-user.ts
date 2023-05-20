@@ -4,13 +4,13 @@ import { pipe } from "fp-ts/function";
 import { CreateUser, createUserValidator } from "@/core/user/validators";
 import { validation, ValidationError } from "@/helpers/errors";
 
-export type OutsideRegister<A> = (data: CreateUser) => Promise<A>;
+export type OutsideRegisterUser<A> = (data: CreateUser) => Promise<A>;
 
-export type Register = <A>(
-  outsideRegister: OutsideRegister<A>,
+export type RegisterUser = <A>(
+  outsideRegister: OutsideRegisterUser<A>,
 ) => (data: CreateUser) => TE.TaskEither<Error | ValidationError, A>;
 
-export const register: Register = (outsideRegister) => (data) => {
+export const registerUser: RegisterUser = (outsideRegister) => (data) => {
   return pipe(
     data,
     validation(createUserValidator),

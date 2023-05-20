@@ -1,11 +1,7 @@
-import {
-  register as registerCore,
-  Register,
-  OutsideRegister,
-} from "@/core/user/use-cases/register-user";
+import * as user from "@/core/user/use-cases/register-user";
 import { UserWithoutPassword } from "@/core/user/validators";
 
-export type OutsideRegisterType = OutsideRegister<UserWithoutPassword>;
+export type OutsideRegisterUser = user.OutsideRegisterUser<UserWithoutPassword>;
 
-export const register: Register = (outsideRegister) => (data) =>
-  registerCore(outsideRegister)(data);
+export const registerUser: user.RegisterUser = (outsideRegister) => (data) =>
+  user.registerUser(outsideRegister)(data);
