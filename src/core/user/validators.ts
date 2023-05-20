@@ -1,5 +1,6 @@
 import { flow } from "fp-ts/lib/function";
 import { z } from "zod";
+import { validate as uuid } from "uuid";
 import * as M from "./errorMessages";
 
 const isCpf = (cpf: string) => {
@@ -41,12 +42,17 @@ const passwordValidator = z
   )
   .brand<"Password">();
 
-const idValidator = z.string().min(1).brand<"Id">();
+const idValidator = z
+  .string()
+  .refine((val) => uuid(val))
+  .brand<"Id">();
 export const emailValidator = z.string().email().brand<"Email">();
+
 const cpfValidator = z
   .string()
   .refine((val) => isCpf(val))
   .brand<"Cpf">();
+
 const nameValidator = z
   .string()
   .regex(/^.{10,100}$/, M.incorrectSize(10, 100))
