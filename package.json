@@ -2,7 +2,7 @@
   "name": "hovet-ufrpe",
   "version": "0.1.0",
   "main": "index.js",
-  "repository": "",
+  "repository": "git@github.com:igor-felipe/hovet-ufrpe.git",
   "author": "Igor Felipe",
   "license": "MIT",
   "private": true,
