@@ -2,11 +2,13 @@ import express, { Request, Response } from "express";
 import { pipe } from "fp-ts/function";
 import * as TE from "fp-ts/TaskEither";
 import morgan from "morgan";
+import helmet from "helmet";
 import { register } from "@/adapters/use-cases/user/register-user-adapter";
 import { userRegister } from "@/adapters/ports/db";
 import { getErrorDetails } from "@/helpers/errors";
 
 const app = express();
+app.use(helmet());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(morgan("tiny"));
