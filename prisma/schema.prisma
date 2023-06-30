@@ -1,0 +1,202 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model Resource {
+  id     Int     @id @default(autoincrement())
+  name   String  @unique
+  Rule   Rule[]
+  User   User?   @relation(fields: [userId], references: [id])
+  userId String?
+
+  @@map("resource")
+}
+
+model User {
+  id           String     @id @default(cuid())
+  password String
+  email        String     @unique
+  cpf          String     @unique
+  name         String
+  status       String // enum
+  createdAt    DateTime   @default(now())
+  Rule         Rule[]
+  Resource     Resource[]
+
+  @@map("user")
+}
+
+model Rule {
+  id         Int    @id @default(autoincrement())
+  permission String // read, write
+  userId     String
+  resourceId Int
+
+  user     User     @relation(fields: [userId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  resource Resource @relation(fields: [resourceId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+
+  @@unique([userId, resourceId])
+  @@map("rule")
+}
+
+model Consultation {
+  id                 Int      @id @default(autoincrement())
+  date               DateTime
+  animalId           String
+  medicalSpecialtyId Int
+  newCase            Boolean // newcase or retunvisit
+  procedureType      String // simple, complex, Intensive Care Unit
+
+  animal           Animal           @relation(fields: [animalId], references: [id])
+  medicalSpecialty MedicalSpecialty @relation(fields: [medicalSpecialtyId], references: [id])
+
+  @@map("consultation")
+}
+
+model Surgery {
+  id                  Int      @id @default(autoincrement())
+  date                DateTime
+  animalId            String
+  surgicalProcedureId Int
+
+  lastModifiedDate DateTime @updatedAt
+
+  surgicalProcedure SurgicalProcedure @relation(fields: [surgicalProcedureId], references: [id])
+  animal            Animal            @relation(fields: [animalId], references: [id])
+
+  @@map("surgery")
+}
+
+model SurgicalProcedure {
+  id          Int       @id @default(autoincrement())
+  name        String    @unique
+  description String
+  type        String // simple, complex
+  hide        Boolean
+  surgery     Surgery[]
+
+  lastModifiedDate DateTime @updatedAt
+
+  @@map("surgical_procedure")
+}
+
+model Animal {
+  id                   String                 @id @default(cuid()) // verificar o tipo do id
+  name                 String?
+  speciesId            Int
+  birthDate            DateTime?
+  sex                  String // enum
+  weight               Float
+  ownerCpf             String
+  ownerName            String
+  surgery              Surgery[]
+  consultation         Consultation[]
+  laboratoryExamReport LaboratoryExamReport[]
+  imageExamReport      ImageExamReport[]
+  necropsy             necropsy[]
+
+  lastModifiedDate DateTime @updatedAt
+
+  species Species @relation(fields: [speciesId], references: [id])
+
+  @@map("animal")
+}
+
+model Species {
+  id             Int      @id @default(autoincrement())
+  name           String   @unique
+  classification String // small animal, large animal, wild animal
+  description    String
+  animal         Animal[]
+
+  hide             Boolean
+  lastModifiedDate DateTime @updatedAt
+
+  @@map("species")
+}
+
+model MedicalSpecialty {
+  id             Int            @id @default(autoincrement())
+  name           String         @unique
+  consultationId Int?
+  consultation   Consultation[]
+  hide           Boolean
+
+  lastModifiedDate DateTime @updatedAt
+
+  @@map("medical_specialty")
+}
+
+model ImageExam {
+  id              Int               @id @default(autoincrement())
+  name            String
+  description     String
+  classification  String // simple, complex
+  imageExamReport ImageExamReport[]
+
+  hide             Boolean
+  lastModifiedDate DateTime @updatedAt
+
+  @@map("image_exam")
+}
+
+model LaboratoryExam {
+  id                   Int                    @id @default(autoincrement())
+  name                 String
+  description          String
+  LaboratoryExamReport LaboratoryExamReport[]
+
+  hide             Boolean
+  lastModifiedDate DateTime @updatedAt
+
+  @@map("laboratory_exam")
+}
+
+model LaboratoryExamReport {
+  id               Int    @id @default(autoincrement())
+  report           String
+  animalId         String
+  laboratoryExamId Int
+
+  lastModifiedDate DateTime @updatedAt
+
+  animail        Animal         @relation(fields: [animalId], references: [id])
+  laboratoryExam LaboratoryExam @relation(fields: [laboratoryExamId], references: [id])
+
+  @@map("laboratory_exam_report")
+}
+
+model ImageExamReport {
+  id          Int    @id @default(autoincrement())
+  report      String
+  animalId    String
+  imageExamId Int
+
+  lastModifiedDate DateTime @updatedAt
+
+  imageExam ImageExam @relation(fields: [imageExamId], references: [id])
+  animail   Animal    @relation(fields: [animalId], references: [id])
+
+  @@map("image_exam_report")
+}
+
+model necropsy {
+  id       Int      @id @default(autoincrement())
+  date     DateTime
+  animalId String
+  report   String
+
+  lastModifiedDate DateTime @updatedAt
+
+  animal Animal? @relation(fields: [animalId], references: [id])
+
+  @@map("necropsy")
+}
