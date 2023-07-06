@@ -5,16 +5,16 @@
   
     {
       "type": "node-terminal",
-      "name": "Debug Current JS File (node)",
+      "name": "Debug Current JS File",
       "request": "launch",
-      "command": "node -- ${fileBasenameNoExtension}",
+      "command": "nodemon --exec node --require sucrase/register ${fileBasename}",
       "cwd": "${fileDirname}"
     },
     {
       "type": "node-terminal",
-      "name": "Debug Current TS File (ts-node)",
+      "name": "Debug Current TS File",
       "request": "launch",
-      "command": "ts-node -- ${fileBasenameNoExtension}",
+      "command": "nodemon --exec node --require sucrase/register ${fileBasename}",
       "cwd": "${fileDirname}",
       "sourceMaps": true, 
     },
@@ -22,16 +22,16 @@
       "type": "node-terminal",
       "name": "server http",
       "request": "launch",
-      "command": "ts-node -- ${workspaceFolder}/src/index.ts",
+      "command": "nodemon --exec node --require sucrase/register ${workspaceFolder}/src/index.ts",
       "cwd": "${fileDirname}",
       "sourceMaps": true, 
       "envFile": "${workspaceFolder}/.env"
     },
     {
       "type": "node-terminal",
-      "name": "Debug Current Test File (npm run test)",
+      "name": "Debug Current Test File (yarn test)",
       "request": "launch",
-      "command": "npm run test -- ${fileBasenameNoExtension}",
+      "command": "yarn test -- ${fileBasenameNoExtension}",
       "cwd": "${fileDirname}"
     }
   ]
