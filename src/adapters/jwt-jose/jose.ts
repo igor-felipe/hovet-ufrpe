@@ -1,4 +1,4 @@
-import { SignJWT, jwtVerify } from "jose";
+import { SignJWT, jwtVerify, errors as jwtErrors } from "jose";
 import * as TE from "fp-ts/TaskEither";
 import { pipe } from "fp-ts/function";
 import { GenerateToken, Payload, VerifyToken } from "@/core/ports/jwt";
@@ -8,8 +8,8 @@ declare module "jose" {
   interface JWTPayload extends Payload {}
 }
 
-const JWT_EXPIRATION_TIME = process.env.JWT_EXPIRATION_TIME || "";
-const secret = Buffer.from(process.env.JWT_SECRET || "");
+const { JWT_EXPIRATION_TIME, JWT_SECRET } = process.env;
+const secret = Buffer.from(JWT_SECRET);
 
 export const generateToken: GenerateToken = (
   payload: Payload,
@@ -26,11 +26,16 @@ export const generateToken: GenerateToken = (
     ),
   );
 
+const toJwtError = (error: unknown) =>
+  error instanceof jwtErrors.JWTExpired && error.name === "JWTExpired"
+    ? new AuthError("JWT expired")
+    : new AuthError("JWT invalid");
+
 export const verifyToken: VerifyToken = (token: string) =>
   pipe(
     TE.tryCatch(
       () => jwtVerify(token, secret),
-      () => new AuthError("JWT verification error"),
+      (error) => toJwtError(error),
     ),
     TE.map((result) => result.payload),
   );
