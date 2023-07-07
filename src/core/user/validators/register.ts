@@ -8,11 +8,14 @@ const registerInput = user.pick({
   cpf: true,
   name: true,
 });
+
 const registerOutput = user.omit({ password: true });
+
 const registerInDbInput = user.omit({
   id: true,
   createdAt: true,
 });
+
 const registerInDbOutput = user.omit({
   password: true,
 });

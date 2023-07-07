@@ -9,23 +9,9 @@ const updateInput = user
   .partial()
   .required({ id: true });
 
-const updateOutput = updateInput.omit({
-  password: true,
-});
-
-const updateInDbInput = user
-  .omit({
-    createdAt: true,
-  })
-  .partial()
-  .required({ id: true });
-
-const updateInDbOutput = user
-  .partial()
-  .omit({
-    password: true,
-  })
-  .required({ id: true });
+const updateOutput = updateInput.omit({ password: true });
+const updateInDbInput = updateInput;
+const updateInDbOutput = updateOutput;
 
 export const updateValidator = toTaskEither(updateInput);
 
