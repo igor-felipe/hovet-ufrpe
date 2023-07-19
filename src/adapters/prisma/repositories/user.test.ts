@@ -2,34 +2,37 @@ import * as TE from "fp-ts/TaskEither";
 import { pipe } from "fp-ts/lib/function";
 import * as user from "./user";
 import {
-  RegisterInDbInput,
-  RegisterInDbOutput,
+  CreateInDbInput,
+  CreateInDbOutput,
   userStatus,
 } from "@/core/user/validators";
 import { expectShouldBeLeft, expectShouldBeRight } from "@/config/test-helpers";
 import { prisma } from "../prisma";
 
-const input: RegisterInDbInput = {
-  email: "Keanu@gmail.co",
-  cpf: "11144477734",
-  name: "Keanu Charles Reeves",
-  password: "Keanu123!",
+const createInDbInput: CreateInDbInput = {
+  email: "email1",
+  cpf: "cpf1",
+  name: "name1",
+  password: "password1",
   status: userStatus.ENABLED,
 };
-const output: RegisterInDbOutput = {
-  email: "Keanu@gmail.co",
-  cpf: "11144477734",
-  name: "Keanu Charles Reeves",
+
+const createInDbOutput: CreateInDbOutput = {
+  cpf: "cpf1",
+  email: "email1",
+  name: "name1",
   status: userStatus.ENABLED,
   id: expect.any(String),
   createdAt: expect.any(Date),
 };
-
+const createMocks = () => ({
+  createInDbMock: jest.fn(user.createInDb),
+  getOneInDbMock: jest.fn(user.getOneInDb),
+  updateInDbMock: jest.fn(user.updateInDb),
+  loginInDbMock: jest.fn(user.loginInDb),
+  findManyInDbMock: jest.fn(user.findManyInDb),
+});
 describe("Prisma User Repo", () => {
-  const createMocks = () => ({
-    createdUserMock: jest.fn(user.createUser),
-  });
-
   beforeEach(async () => {
     await prisma.user.deleteMany();
   });
@@ -39,24 +42,147 @@ describe("Prisma User Repo", () => {
 
   it("should create user in db", () => {
     return pipe(
-      input,
-      user.createUser,
+      createInDbInput,
+      user.createInDb,
       expectShouldBeRight,
-      TE.map((data) => expect(data).toEqual(output)),
+      TE.map((data) => expect(data).toEqual(createInDbOutput)),
     )();
   });
 
   it("should throw an error when creating a user that already exists", () => {
-    const { createdUserMock } = createMocks();
+    const { createInDbMock } = createMocks();
     return pipe(
-      input,
-      createdUserMock,
-      TE.chain(() => createdUserMock(input)),
+      createInDbInput,
+      createInDbMock,
+      TE.chain(() => createInDbMock(createInDbInput)),
       expectShouldBeLeft,
       TE.mapLeft((error) => {
-        expect(createdUserMock).toHaveBeenCalledTimes(2);
-        expect(error.details).toContain("already in use");
+        expect(createInDbMock).toHaveBeenCalledTimes(2);
+        expect(["cpf already in use", "email already in use"]).toContain(
+          error.details,
+        );
       }),
     )();
   });
+
+  it("should throw a database validation error when creating a user with a wrong type cpf.", () => {
+    const { createInDbMock } = createMocks();
+    return pipe(
+      { ...createInDbInput, cpf: 1 } as unknown as CreateInDbInput,
+      createInDbMock,
+      expectShouldBeLeft,
+      TE.mapLeft((error) => {
+        expect(error.details).toBe("data validation error in the database");
+      }),
+    )();
+  });
+
+  it("should throw an error when not finding a user", () => {
+    const { getOneInDbMock } = createMocks();
+    return pipe(
+      { id: "1" },
+      getOneInDbMock,
+      expectShouldBeLeft,
+      TE.mapLeft((error) => {
+        expect(error.details).toBe("No User found");
+      }),
+    )();
+  });
+
+  it("should finding a user", () => {
+    const { getOneInDbMock, createInDbMock } = createMocks();
+    return pipe(
+      createInDbInput,
+      createInDbMock,
+      TE.chain((newUser) => getOneInDbMock({ email: newUser.email })),
+      expectShouldBeRight,
+      TE.map((result) => {
+        expect(result).toEqual(createInDbOutput);
+        return result;
+      }),
+    )();
+  });
+  it("should finding a user to login", () => {
+    const { loginInDbMock, createInDbMock } = createMocks();
+    return pipe(
+      createInDbInput,
+      createInDbMock,
+      TE.chain((newUser) => loginInDbMock({ email: newUser.email })),
+      expectShouldBeRight,
+      TE.map((result) => {
+        expect(result).toEqual({
+          ...createInDbOutput,
+          password: expect.any(String),
+        });
+        return result;
+      }),
+    )();
+  });
+
+  it("should throw an error on not finding a user when trying to update it", async () => {
+    const { updateInDbMock } = createMocks();
+
+    return pipe(
+      { id: "1" },
+      updateInDbMock,
+      expectShouldBeLeft,
+      TE.mapLeft((error) => {
+        expect(error.details).toBe("Record to update not found.");
+      }),
+    )();
+  });
+  it("should update user status", async () => {
+    const { updateInDbMock, createInDbMock } = createMocks();
+
+    return pipe(
+      createInDbInput,
+      createInDbMock,
+      TE.chain((newUser) =>
+        updateInDbMock({ id: newUser.id, status: userStatus.DISABLED }),
+      ),
+      expectShouldBeRight,
+      TE.map((data) =>
+        expect(data).toEqual({
+          ...createInDbOutput,
+          status: userStatus.DISABLED,
+        }),
+      ),
+    )();
+  });
+  it("should throw an error when trying to update a cpf with a value already in use", async () => {
+    const { updateInDbMock, createInDbMock } = createMocks();
+
+    return pipe(
+      createInDbInput,
+      createInDbMock,
+      TE.chain(() =>
+        createInDbMock({
+          ...createInDbInput,
+          cpf: "cpf2",
+          email: "email2",
+        }),
+      ),
+      TE.chain((newUser) => updateInDbMock({ id: newUser.id, cpf: "cpf1" })),
+      expectShouldBeLeft,
+      TE.mapLeft((error) => {
+        expect(error.details).toBe("cpf already in use");
+      }),
+    )();
+  });
+
+  it("should find an array of users", () => {
+    const { findManyInDbMock, createInDbMock } = createMocks();
+    return pipe(
+      createInDbInput,
+      createInDbMock,
+      TE.chain((newUser) => findManyInDbMock({ name: newUser.name })),
+      expectShouldBeRight,
+      TE.map((result) => {
+        expect(result).toEqual([createInDbOutput]);
+        return result;
+      }),
+    )();
+  });
+
+  //
 });
