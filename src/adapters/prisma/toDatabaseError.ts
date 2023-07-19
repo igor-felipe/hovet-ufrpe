@@ -1,45 +1,43 @@
 /* eslint-disable no-nested-ternary */
 import { Prisma as P } from "@prisma/client";
-import { DatabaseError } from "@/core/erros";
-
-export type PrismaClientKnownRequestError = {
-  meta:
-    | {
-        target: string | undefined;
-        cause: string | undefined;
-      }
-    | undefined;
-};
+import { pipe } from "fp-ts/lib/function";
+import { DatabaseError } from "@/core/errors";
 
 type KnownError = P.PrismaClientKnownRequestError;
-type UnknownError = P.PrismaClientUnknownRequestError;
-type ValidationError = P.PrismaClientValidationError;
-
 const isKnownError = (error: unknown): error is KnownError =>
   error instanceof P.PrismaClientKnownRequestError;
 
-const isUnknownError = (error: unknown): error is UnknownError =>
+const isUnknownError = (
+  error: unknown,
+): error is P.PrismaClientUnknownRequestError =>
   error instanceof P.PrismaClientUnknownRequestError;
 
-const isValidationError = (error: unknown): error is ValidationError =>
+const isValidationError = (
+  error: unknown,
+): error is P.PrismaClientValidationError =>
   error instanceof P.PrismaClientValidationError;
 
 const P2002 = (error: KnownError) => {
+  const entity = error.message.split(".")[1];
+
+  return pipe(
+    error.message,
+    (m) => m.split("Unique constraint failed on the fields: ")[1] || "",
+    (m) => m.replace(/[()``]/g, "").split(","),
+    (fields) =>
+      fields.length === 1
+        ? `${fields[0]} already in use`
+        : `${entity} already exists`,
+    (details) => new DatabaseError(details),
+  );
+};
+
+const P2025 = (error: KnownError) => {
   const { meta } = error;
 
-  const target =
-    meta && Array.isArray(meta.target) ? meta.target.join(", ") : undefined;
+  const message = meta && meta["cause"] ? meta["cause"] : error.message;
 
-  const cause =
-    meta && Array.isArray(meta.target) ? meta.target.join(", ") : undefined;
-
-  const fields = target || cause;
-
-  return new DatabaseError(`${fields} already in use`);
-};
-const P2025 = (error: KnownError) => {
-  const fields = error.meta;
-  return new DatabaseError(`${fields}: NotFoundError`);
+  return new DatabaseError(`${message}`);
 };
 
 const selectByCode = (error: KnownError) => {
