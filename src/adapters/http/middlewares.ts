@@ -2,7 +2,7 @@ import { pipe } from "fp-ts/function";
 import * as TE from "fp-ts/TaskEither";
 import * as E from "fp-ts/Either";
 import { verifyToken } from "@/container/jwt";
-import { AuthError } from "@/core/erros";
+import { AuthError } from "@/core/errors";
 
 export const extractToken = (authHeader: string) =>
   pipe(
@@ -10,7 +10,7 @@ export const extractToken = (authHeader: string) =>
     (e) =>
       e.startsWith("Bearer ")
         ? E.right(e)
-        : E.left(new AuthError("invalid bearer header")),
+        : E.left(new AuthError("invalid Bearer token header")),
     E.map((e) => e.replace("Bearer ", "").replace(/^['"](.*)['"]$/, "$1")),
   );
 

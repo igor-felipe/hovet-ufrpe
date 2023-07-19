@@ -2,7 +2,7 @@ import { SignJWT, jwtVerify, errors as jwtErrors } from "jose";
 import * as TE from "fp-ts/TaskEither";
 import { pipe } from "fp-ts/function";
 import { GenerateToken, Payload, VerifyToken } from "@/core/ports/jwt";
-import { AuthError } from "@/core/erros";
+import { AuthError } from "@/core/errors";
 
 declare module "jose" {
   interface JWTPayload extends Payload {}

@@ -1,6 +1,6 @@
 import { z } from "zod";
 import * as TE from "fp-ts/TaskEither";
-import { DefaultError, UnknownError, ValidationError } from "./erros";
+import { DefaultError, UnknownError, ValidationError } from "./errors";
 
 export const toValidationError = (error: unknown) => {
   if (error instanceof z.ZodError) {

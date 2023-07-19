@@ -1,5 +1,5 @@
 import * as TE from "fp-ts/TaskEither";
-import { AuthError } from "../erros";
+import { AuthError } from "../errors";
 import { User } from "../user/validators";
 
 export type Payload = Pick<User, "id">;

@@ -1,9 +1,9 @@
 import * as TE from "fp-ts/TaskEither";
 import { pipe } from "fp-ts/function";
 import { prisma } from "../prisma";
-import { toDatabaseError } from "../errors/toDatabaseError";
+import { toDatabaseError } from "../toDatabaseError";
 import * as V from "@/core/user/validators";
-import * as userRepo from "@/core/ports/repositories/user-repository";
+import * as userRepo from "@/core/ports/repositories/user_repository";
 
 const select: Record<keyof Omit<V.User, "password">, boolean> = {
   id: true,
@@ -14,17 +14,17 @@ const select: Record<keyof Omit<V.User, "password">, boolean> = {
   createdAt: true,
 };
 
-export const createUser: userRepo.RegisterInDb = (data) => {
+export const createInDb: userRepo.CreateInDb = (data) => {
   return pipe(
     TE.tryCatch(
       () => prisma.user.create({ data, select }),
       (error) => toDatabaseError(error),
     ),
-    TE.map((user) => user as V.RegisterInDbOutput),
+    TE.map((user) => user as V.CreateInDbOutput),
   );
 };
 
-export const updateUser: userRepo.UpdateInDb = (data) =>
+export const updateInDb: userRepo.UpdateInDb = (data) =>
   pipe(
     TE.tryCatch(
       () =>
@@ -38,13 +38,13 @@ export const updateUser: userRepo.UpdateInDb = (data) =>
     TE.map((user) => user as V.UpdateInDbOutput),
   );
 
-export const getOneByIdInDb: userRepo.GetOneByIdInDb = (where) =>
+export const getOneInDb: userRepo.GetOneInDb = (where) =>
   pipe(
     TE.tryCatch(
-      () => prisma.user.findUnique({ where, select }),
+      () => prisma.user.findUniqueOrThrow({ where, select }),
       (error) => toDatabaseError(error),
     ),
-    TE.map((user) => user as V.GetOneByIdInDbOutput),
+    TE.map((user) => user as V.GetOneInDbOutput),
   );
 
 export const loginInDb: userRepo.LoginInDb = (where) => {
@@ -63,7 +63,6 @@ export const loginInDb: userRepo.LoginInDb = (where) => {
         prisma.user.findUniqueOrThrow({ where, select: selectWithPassword }),
       (error) => toDatabaseError(error),
     ),
-    // TE.chain(TE.fromNullable(new NotFoundError("User not found"))),
     TE.map((user) => (user as V.LoginInDbOutput) ?? null),
   );
 };

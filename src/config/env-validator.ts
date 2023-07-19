@@ -1,7 +1,7 @@
 import { pipe } from "fp-ts/function";
 import { z } from "zod";
 import * as TE from "fp-ts/TaskEither";
-import { EnvError } from "@/core/erros";
+import { EnvError } from "@/core/errors";
 
 const toEnvError = (error: unknown) => {
   if (error instanceof z.ZodError) {

@@ -1,5 +1,5 @@
 import * as TE from "fp-ts/TaskEither";
-import { ValidationError } from "@/core/erros";
+import { ValidationError } from "@/core/errors";
 
 export type GenerateHash = (
   password: string,

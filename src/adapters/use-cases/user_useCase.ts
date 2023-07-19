@@ -3,13 +3,13 @@ import { db } from "@/container/db";
 import { generateToken } from "@/container/jwt";
 import { generateHash, verifyHash } from "@/container/hash";
 
-export const register: user.RegisterUseCase = user.register({
-  registerInDb: db.user.createUser,
+export const create: user.CreateUseCase = user.create({
+  createInDb: db.user.createInDb,
   generateHash,
 });
 
 export const update: user.UpdateUseCase = user.update({
-  updateInDb: db.user.updateUser,
+  updateInDb: db.user.updateInDb,
   generateHash,
 });
 
@@ -19,8 +19,8 @@ export const login: user.LoginUseCase = user.login({
   verifyHash,
 });
 
-export const getOneById: user.GetOneByIdUseCase = user.getOneById({
-  getOneByIdInDb: db.user.getOneByIdInDb,
+export const getOne: user.GetOneUseCase = user.getOne({
+  getOneInDb: db.user.getOneInDb,
 });
 
 export const findMany: user.FindManyUseCase = user.findMany({
