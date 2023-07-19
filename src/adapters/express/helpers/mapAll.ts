@@ -9,5 +9,5 @@ export const mapAll =
       taskEither,
       TE.map((result) => res.json(result)),
       TE.mapLeft(getError),
-      TE.mapLeft((result) => res.status(result.code).json(result.details)),
+      TE.mapLeft((error) => res.status(error.code).json(error.details)),
     );
