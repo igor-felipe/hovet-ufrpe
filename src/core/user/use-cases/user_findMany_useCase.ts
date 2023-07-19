@@ -2,8 +2,8 @@ import * as TE from "fp-ts/TaskEither";
 import { pipe } from "fp-ts/function";
 import * as R from "ramda";
 import * as V from "@/core/user/validators";
-import { ValidationError } from "@/core/erros";
-import { FindManyInDb } from "@/core/ports/repositories/user-repository";
+import { ValidationError } from "@/core/errors";
+import { FindManyInDb } from "@/core/ports/repositories/user_repository";
 
 export type Ctx = {
   findManyInDb: FindManyInDb;

@@ -6,10 +6,10 @@ import {
   UpdateInput,
   UpdateOutput,
   UpdateInDbInput,
-} from "@/core/user/validators/update";
+} from "@/core/user/validators/user_update_validator";
 
 import { GenerateHash } from "@/core/ports/hash";
-import { UpdateInDb } from "@/core/ports/repositories/user-repository";
+import { UpdateInDb } from "@/core/ports/repositories/user_repository";
 
 export type Transform = (
   data: UpdateInput,

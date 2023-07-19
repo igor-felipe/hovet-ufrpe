@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { user, User } from "./user";
+import { user, User } from "./user_validator";
 import { toTaskEither } from "@/core/helpers";
 
 const loginInput = user.pick({

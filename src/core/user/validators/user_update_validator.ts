@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { user } from "./user";
+import { user } from "./user_validator";
 import { toTaskEither } from "@/core/helpers";
 
 const updateInput = user
