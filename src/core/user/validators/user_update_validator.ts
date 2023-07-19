@@ -5,6 +5,7 @@ import { toTaskEither } from "@/core/helpers";
 const updateInput = user
   .omit({
     createdAt: true,
+    updatedAt: true,
   })
   .partial()
   .required({ id: true });

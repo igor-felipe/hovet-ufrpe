@@ -15,6 +15,7 @@ const createInDbInput: CreateInDbInput = {
   name: "name1",
   password: "password1",
   status: userStatus.ENABLED,
+  date: new Date(),
 };
 
 const createInDbOutput: CreateInDbOutput = {
@@ -23,7 +24,9 @@ const createInDbOutput: CreateInDbOutput = {
   name: "name1",
   status: userStatus.ENABLED,
   id: expect.any(String),
+  date: expect.any(Date),
   createdAt: expect.any(Date),
+  updatedAt: expect.any(Date),
 };
 const createMocks = () => ({
   createInDbMock: jest.fn(user.createInDb),

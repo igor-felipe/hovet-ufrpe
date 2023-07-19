@@ -11,6 +11,8 @@ const input: V.CreateInDbInput = {
 const output: V.CreateInDbOutput = {
   name: "test",
   id: expect.any(Number),
+  createdAt: expect.any(Date),
+  updatedAt: expect.any(Date),
 };
 
 describe("Prisma resource Repo", () => {

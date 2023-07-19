@@ -76,7 +76,9 @@ export const user = z
     cpf: z.string().refine((val) => isCpf(val)),
     name: z.string().regex(/^.{10,100}$/, M.incorrectSize(10, 100)),
     status: z.enum([userStatus.ENABLED, userStatus.DISABLED]),
+    date: z.date(),
     createdAt: z.date(),
+    updatedAt: z.date(),
   })
   .strict();
 

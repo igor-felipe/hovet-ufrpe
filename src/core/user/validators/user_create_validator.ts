@@ -7,6 +7,7 @@ const createInput = user.pick({
   email: true,
   cpf: true,
   name: true,
+  date: true,
 });
 
 const createOutput = user.omit({ password: true });
@@ -14,6 +15,7 @@ const createOutput = user.omit({ password: true });
 const createInDbInput = user.omit({
   id: true,
   createdAt: true,
+  updatedAt: true,
 });
 
 const createInDbOutput = user.omit({

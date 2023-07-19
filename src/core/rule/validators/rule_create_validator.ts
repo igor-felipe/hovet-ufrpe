@@ -2,7 +2,7 @@ import { z } from "zod";
 import { toTaskEither } from "@/core/helpers";
 import { rule } from "./rule_validator";
 
-const createInput = rule.omit({ id: true });
+const createInput = rule.omit({ id: true, createdAt: true, updatedAt: true });
 const createOutput = rule;
 const createInDbInput = createInput;
 const createInDbOutput = rule;

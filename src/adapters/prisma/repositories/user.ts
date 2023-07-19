@@ -11,9 +11,10 @@ const select: Record<keyof Omit<V.User, "password">, boolean> = {
   name: true,
   status: true,
   cpf: true,
+  date: true,
   createdAt: true,
+  updatedAt: true,
 };
-
 export const createInDb: userRepo.CreateInDb = (data) => {
   return pipe(
     TE.tryCatch(
@@ -55,7 +56,9 @@ export const loginInDb: userRepo.LoginInDb = (where) => {
     name: true,
     status: true,
     cpf: true,
+    date: true,
     createdAt: true,
+    updatedAt: true,
   };
   return pipe(
     TE.tryCatch(

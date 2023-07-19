@@ -11,6 +11,8 @@ export const rule = z.object({
   permission: z.enum([permission.READ, permission.WRITE, permission.DELETE]),
   userId: z.string().nonempty(),
   resourceId: z.number(),
+  createdAt: z.date(),
+  updatedAt: z.date(),
 });
 
 export type Rule = z.infer<typeof rule>;

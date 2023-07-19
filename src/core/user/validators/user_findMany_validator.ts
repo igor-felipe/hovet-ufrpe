@@ -6,7 +6,7 @@ const findManyInput = user
   .pick({
     status: true,
     name: true,
-    createdAt: true,
+    date: true,
   })
   .partial();
 

@@ -13,6 +13,7 @@ const seed = async () => {
       name: "",
       password: "",
       status: "",
+      date: new Date(),
     },
   });
   const resource = await prisma.resource.create({
@@ -30,6 +31,8 @@ const seed = async () => {
   const output = {
     id: expect.any(Number),
     ...input,
+    createdAt: expect.any(Date),
+    updatedAt: expect.any(Date),
   };
 
   return { user, resource, input, output };
