@@ -5,19 +5,19 @@ import { mapAll } from "@/adapters/express/helpers/mapAll";
 
 const resourceRoutes = Router();
 
-resourceRoutes.post("/api/resource", async (req: Request, res: Response) =>
+resourceRoutes.post("/resources", async (req: Request, res: Response) =>
   pipe(req.body, resource.create, mapAll(res))(),
 );
 
-resourceRoutes.put("/api/resource", async (req: Request, res: Response) =>
+resourceRoutes.put("/resources", async (req: Request, res: Response) =>
   pipe(req.body, resource.update, mapAll(res))(),
 );
 
-resourceRoutes.get("/api/resources", async (req: Request, res: Response) =>
+resourceRoutes.get("/resources", async (req: Request, res: Response) =>
   pipe(req.query, resource.findMany, mapAll(res))(),
 );
 
-resourceRoutes.get("/api/resource/:id", async (req: Request, res: Response) =>
+resourceRoutes.get("/resources/:id", async (req: Request, res: Response) =>
   pipe({ id: Number(req.params["id"]) }, resource.getOne, mapAll(res))(),
 );
 
