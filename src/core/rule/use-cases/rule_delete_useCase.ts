@@ -14,6 +14,5 @@ export type DeleteUseCase = (
   data: V.DeleteInput,
 ) => TE.TaskEither<ValidationError, V.DeleteOutput>;
 
-export const deleteR: Delete = (ctx) => (data) => {
-  return pipe(data, V.deleteValidator, TE.chain(ctx.deleteInDb));
-};
+export const deleteR: Delete = (ctx) => (data) =>
+  pipe(data, V.deleteValidator, TE.chain(ctx.deleteInDb));

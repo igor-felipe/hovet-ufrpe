@@ -1,8 +1,7 @@
 import * as TE from "fp-ts/TaskEither";
 import { AuthError } from "../errors";
-import { User } from "../user/validators";
 
-export type Payload = Pick<User, "id">;
+export type Payload = { id: string; rules: string };
 export type Token = string;
 export type GenerateToken = (
   payload: Payload,

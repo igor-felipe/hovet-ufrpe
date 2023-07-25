@@ -1,7 +1,7 @@
 import * as user from "@/core/user/use-cases";
-import { db } from "@/container/db";
-import { generateToken } from "@/container/jwt";
-import { generateHash, verifyHash } from "@/container/hash";
+import { db } from "@/linkers/db";
+import { generateToken } from "@/linkers/jwt";
+import { generateHash, verifyHash } from "@/linkers/hash";
 
 export const create: user.CreateUseCase = user.create({
   createInDb: db.user.createInDb,

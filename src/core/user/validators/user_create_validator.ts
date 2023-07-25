@@ -8,6 +8,7 @@ const createInput = user.pick({
   cpf: true,
   name: true,
   date: true,
+  authId: true,
 });
 
 const createOutput = user.omit({ password: true });

@@ -26,6 +26,7 @@ export const transform =
         password,
         email: data.email.toLowerCase(),
         status: userStatus.ENABLED,
+        authId: data.authId,
       })),
     );
 
@@ -35,11 +36,10 @@ export type CreateUseCase = (
 
 export type Create = (ctx: Ctx) => CreateUseCase;
 
-export const create: Create = (ctx) => (data) => {
-  return pipe(
+export const create: Create = (ctx) => (data) =>
+  pipe(
     data,
     V.createValidator,
     TE.chain(transform(ctx.generateHash)),
     TE.chain(ctx.createInDb),
   );
-};

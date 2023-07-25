@@ -14,6 +14,5 @@ export type CreateUseCase = (
 
 export type Create = (ctx: Ctx) => CreateUseCase;
 
-export const create: Create = (ctx) => (data) => {
-  return pipe(data, V.ruleValidator, TE.chain(ctx.createInDb));
-};
+export const create: Create = (ctx) => (data) =>
+  pipe(data, V.ruleValidator, TE.chain(ctx.createInDb));

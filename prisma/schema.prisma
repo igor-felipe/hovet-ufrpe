@@ -11,14 +11,15 @@ datasource db {
 }
 
 model User {
-  id        String   @id @default(cuid())
-  password  String
-  email     String   @unique
-  cpf       String   @unique
-  name      String
-  status    String // enum
-  date      DateTime
-  
+  id       String   @id @default(cuid())
+  password String
+  email    String   @unique
+  cpf      String   @unique
+  name     String
+  status   String // enum
+  date     DateTime
+  authId   String
+
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
@@ -40,18 +41,18 @@ model Resource {
 }
 
 model Rule {
-  id         Int    @id @default(autoincrement())
-  permission String // read, write, delete
-  userId     String
-  resourceId Int
-  
+  id           Int    @id @default(autoincrement())
+  userId       String
+  resourceName String
+  permission   String // r, w, d -> (read, write, delete)
+
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
   user     User     @relation(fields: [userId], references: [id], onDelete: Cascade, onUpdate: Cascade)
-  resource Resource @relation(fields: [resourceId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  resource Resource @relation(fields: [resourceName], references: [name], onDelete: Cascade, onUpdate: Cascade)
 
-  @@unique([userId, resourceId])
+  @@unique([userId, resourceName])
   @@map("rule")
 }
 
@@ -60,9 +61,9 @@ model Consultation {
   date               DateTime
   animalId           String
   medicalSpecialtyId Int
-  newCase            Boolean // newcase or retunvisit
+  newCase            Boolean // new or retun
   procedureType      String // simple, complex, Intensive Care Unit
-  
+
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
@@ -76,8 +77,8 @@ model Surgery {
   id                  Int      @id @default(autoincrement())
   animalId            String
   surgicalProcedureId Int
-  date      DateTime
-  
+  date                DateTime
+
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
@@ -94,9 +95,8 @@ model SurgicalProcedure {
   type        String // simple, complex
   hide        Boolean
   surgery     Surgery[]
-  date      DateTime
+  date        DateTime
 
-  
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
@@ -117,8 +117,8 @@ model Animal {
   laboratoryExamReport LaboratoryExamReport[]
   imageExamReport      ImageExamReport[]
   necropsy             necropsy[]
-  date      DateTime
-  
+  date                 DateTime
+
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
@@ -130,11 +130,11 @@ model Animal {
 model Species {
   id             Int      @id @default(autoincrement())
   name           String   @unique
-  classification String   // small animal, large animal, wild animal
+  classification String // small animal, large animal, wild animal
   description    String
   animal         Animal[]
-  date      DateTime
-  
+  date           DateTime
+
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
@@ -147,7 +147,7 @@ model MedicalSpecialty {
   consultationId Int?
   consultation   Consultation[]
   hide           Boolean
-  
+
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
@@ -160,8 +160,8 @@ model ImageExam {
   description     String
   classification  String // simple, complex
   imageExamReport ImageExamReport[]
-  date      DateTime
-  
+  date            DateTime
+
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
@@ -173,8 +173,8 @@ model LaboratoryExam {
   name                 String
   description          String
   LaboratoryExamReport LaboratoryExamReport[]
-  date      DateTime
-  
+  date                 DateTime
+
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
@@ -182,12 +182,12 @@ model LaboratoryExam {
 }
 
 model LaboratoryExamReport {
-  id               Int    @id @default(autoincrement())
+  id               Int      @id @default(autoincrement())
   report           String
   animalId         String
   laboratoryExamId Int
-  date      DateTime
-  
+  date             DateTime
+
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
@@ -198,12 +198,12 @@ model LaboratoryExamReport {
 }
 
 model ImageExamReport {
-  id          Int    @id @default(autoincrement())
+  id          Int      @id @default(autoincrement())
   report      String
   animalId    String
   imageExamId Int
-  date      DateTime
-  
+  date        DateTime
+
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
@@ -217,8 +217,8 @@ model necropsy {
   id       Int      @id @default(autoincrement())
   animalId String
   report   String
-  date      DateTime
-  
+  date     DateTime
+
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 

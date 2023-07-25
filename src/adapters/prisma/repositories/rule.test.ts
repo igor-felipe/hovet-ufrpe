@@ -3,32 +3,36 @@ import { pipe } from "fp-ts/lib/function";
 import { expectShouldBeLeft, expectShouldBeRight } from "@/config/test-helpers";
 import { prisma } from "../prisma";
 import * as rule from "./rule";
+import * as V from "@/core/rule/validators";
 import { permission } from "@/core/rule/validators/rule_validator";
 
 const seed = async () => {
   const user = await prisma.user.create({
     data: {
+      id: "1",
       email: "",
       cpf: "",
       name: "",
       password: "",
       status: "",
       date: new Date(),
+      authId: "",
     },
   });
   const resource = await prisma.resource.create({
     data: {
-      name: "",
+      id: 1,
+      name: "resource1",
     },
   });
 
-  const input = {
+  const input: V.CreateInDbInput = {
     permission: permission.READ,
-    resourceId: resource.id,
     userId: user.id,
+    resourceName: resource.name,
   };
 
-  const output = {
+  const output: V.CreateInDbOutput = {
     id: expect.any(Number),
     ...input,
     createdAt: expect.any(Date),

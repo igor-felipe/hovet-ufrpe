@@ -9,8 +9,8 @@
   "scripts": {
     "start": "node dist/src/index.js",
     "dev": "nodemon --exec sucrase-node src/index.ts",
-    "test": "jest && yarn test:integration",
-    "test:watch": "jest --watch --clearMocks",
+    "test": "jest -i && yarn test:integration",
+    "test:watch": "jest -i --watch --clearMocks",
     "test:integration": "jest --passWithNoTests --config jest.config.integration.js",
     "test:integration:watch": " yarn test:integration --watch",
     "lint": "eslint . --ext js,ts",

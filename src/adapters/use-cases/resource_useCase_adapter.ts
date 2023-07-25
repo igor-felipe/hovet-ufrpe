@@ -1,5 +1,5 @@
 import * as resource from "@/core/resource/use-cases";
-import { db } from "@/container/db";
+import { db } from "@/linkers/db";
 
 export const create: resource.CreateUseCase = resource.create({
   createInDb: db.resource.createInDb,

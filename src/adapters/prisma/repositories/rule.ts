@@ -19,7 +19,7 @@ export const createInDb: ruleRepo.CreateInDb = (data) =>
             },
             resource: {
               connect: {
-                id: data.resourceId,
+                name: data.resourceName,
               },
             },
             permission: data.permission,

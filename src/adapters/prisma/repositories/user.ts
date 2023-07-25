@@ -14,16 +14,17 @@ const select: Record<keyof Omit<V.User, "password">, boolean> = {
   date: true,
   createdAt: true,
   updatedAt: true,
+  authId: true,
 };
-export const createInDb: userRepo.CreateInDb = (data) => {
-  return pipe(
+
+export const createInDb: userRepo.CreateInDb = (data) =>
+  pipe(
     TE.tryCatch(
       () => prisma.user.create({ data, select }),
       (error) => toDatabaseError(error),
     ),
     TE.map((user) => user as V.CreateInDbOutput),
   );
-};
 
 export const updateInDb: userRepo.UpdateInDb = (data) =>
   pipe(
@@ -48,27 +49,27 @@ export const getOneInDb: userRepo.GetOneInDb = (where) =>
     TE.map((user) => user as V.GetOneInDbOutput),
   );
 
-export const loginInDb: userRepo.LoginInDb = (where) => {
-  const selectWithPassword: Record<keyof V.User, boolean> = {
-    password: true,
-    id: true,
-    email: true,
-    name: true,
-    status: true,
-    cpf: true,
-    date: true,
-    createdAt: true,
-    updatedAt: true,
-  };
-  return pipe(
+export const loginInDb: userRepo.LoginInDb = (where) =>
+  pipe(
     TE.tryCatch(
       () =>
-        prisma.user.findUniqueOrThrow({ where, select: selectWithPassword }),
+        prisma.user.findUniqueOrThrow({
+          where,
+          select: {
+            id: true,
+            password: true,
+            status: true,
+            Rule: { select: { permission: true, resourceName: true } },
+          },
+        }),
       (error) => toDatabaseError(error),
     ),
-    TE.map((user) => (user as V.LoginInDbOutput) ?? null),
+    TE.map(({ Rule, ...user }) => ({
+      user,
+      rules: Rule,
+    })),
+    TE.map((data) => data as V.LoginInDbOutput),
   );
-};
 
 export const findManyInDb: userRepo.FindManyInDb = (where) =>
   pipe(

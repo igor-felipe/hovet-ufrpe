@@ -14,6 +14,5 @@ export type GetOneUseCase = (
   data: V.GetOneInput,
 ) => TE.TaskEither<ValidationError, V.GetOneOutput>;
 
-export const getOne: GetOne = (ctx) => (data) => {
-  return pipe(data, V.getOneValidator, TE.chain(ctx.getOneInDb));
-};
+export const getOne: GetOne = (ctx) => (data) =>
+  pipe(data, V.getOneValidator, TE.chain(ctx.getOneInDb));

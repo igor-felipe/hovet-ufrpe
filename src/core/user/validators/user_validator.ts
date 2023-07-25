@@ -28,6 +28,7 @@ const M = {
   noEmpty: () => ({
     message: `cannot be empty`,
   }),
+  invalidDate: () => ({ message: `invalid date` }),
 };
 
 const isCpf = (cpf: string) => {
@@ -76,9 +77,13 @@ export const user = z
     cpf: z.string().refine((val) => isCpf(val)),
     name: z.string().regex(/^.{10,100}$/, M.incorrectSize(10, 100)),
     status: z.enum([userStatus.ENABLED, userStatus.DISABLED]),
-    date: z.date(),
+    date: z
+      .string()
+      .refine((string) => new Date(string), M.invalidDate())
+      .transform((date) => new Date(date)),
     createdAt: z.date(),
     updatedAt: z.date(),
+    authId: z.string().min(4, M.noEmpty()),
   })
   .strict();
 

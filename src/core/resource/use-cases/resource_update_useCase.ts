@@ -17,6 +17,5 @@ export type UpdateUseCase = (
   data: UpdateInput,
 ) => TE.TaskEither<Error, UpdateOutput>;
 
-export const update: Update = (ctx: Ctx) => (data: UpdateInput) => {
-  return pipe(data, updateValidator, TE.chain(ctx.updateInDb));
-};
+export const update: Update = (ctx: Ctx) => (data: UpdateInput) =>
+  pipe(data, updateValidator, TE.chain(ctx.updateInDb));

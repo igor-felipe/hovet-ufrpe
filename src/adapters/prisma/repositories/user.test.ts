@@ -16,6 +16,7 @@ const createInDbInput: CreateInDbInput = {
   password: "password1",
   status: userStatus.ENABLED,
   date: new Date(),
+  authId: "authId1",
 };
 
 const createInDbOutput: CreateInDbOutput = {
@@ -27,6 +28,7 @@ const createInDbOutput: CreateInDbOutput = {
   date: expect.any(Date),
   createdAt: expect.any(Date),
   updatedAt: expect.any(Date),
+  authId: expect.any(String),
 };
 const createMocks = () => ({
   createInDbMock: jest.fn(user.createInDb),
@@ -37,9 +39,6 @@ const createMocks = () => ({
 });
 describe("Prisma User Repo", () => {
   beforeEach(async () => {
-    await prisma.user.deleteMany();
-  });
-  beforeAll(async () => {
     await prisma.user.deleteMany();
   });
 
@@ -114,8 +113,12 @@ describe("Prisma User Repo", () => {
       expectShouldBeRight,
       TE.map((result) => {
         expect(result).toEqual({
-          ...createInDbOutput,
-          password: expect.any(String),
+          rules: expect.any(Array),
+          user: {
+            id: createInDbOutput.id,
+            status: createInDbOutput.status,
+            password: expect.any(String),
+          },
         });
         return result;
       }),

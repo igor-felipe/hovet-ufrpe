@@ -10,7 +10,7 @@ export const rule = z.object({
   id: z.number().nonnegative(),
   permission: z.enum([permission.READ, permission.WRITE, permission.DELETE]),
   userId: z.string().nonempty(),
-  resourceId: z.number(),
+  resourceName: z.string().nonempty(),
   createdAt: z.date(),
   updatedAt: z.date(),
 });

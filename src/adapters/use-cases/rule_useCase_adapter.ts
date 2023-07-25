@@ -1,5 +1,5 @@
 import * as rule from "@/core/rule/use-cases";
-import { db } from "@/container/db";
+import { db } from "@/linkers/db";
 
 export const create: rule.CreateUseCase = rule.create({
   createInDb: db.rule.createInDb,

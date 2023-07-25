@@ -44,11 +44,10 @@ export type UpdateUseCase = (
   data: UpdateInput,
 ) => TE.TaskEither<Error, UpdateOutput>;
 
-export const update: Update = (ctx: Ctx) => (data: UpdateInput) => {
-  return pipe(
+export const update: Update = (ctx: Ctx) => (data: UpdateInput) =>
+  pipe(
     data,
     updateValidator,
     TE.chain(transform(ctx.generateHash)),
     TE.chain(ctx.updateInDb),
   );
-};

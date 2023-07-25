@@ -15,11 +15,10 @@ export type FindManyUseCase = (
   data: V.FindManyInput,
 ) => TE.TaskEither<ValidationError, V.FindManyOutput[]>;
 
-export const findMany: FindMany = (ctx) => (data) => {
-  return pipe(
+export const findMany: FindMany = (ctx) => (data) =>
+  pipe(
     data,
     V.findManyValidator,
     TE.map(R.filter(R.isNotNil)),
     TE.chain(ctx.findManyInDb),
   );
-};

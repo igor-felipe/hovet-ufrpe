@@ -6,7 +6,8 @@ import { Payload } from "@/core/ports/jwt";
 
 describe("jwt", () => {
   const payload: Payload = {
-    id: "123456789",
+    id: "1",
+    rules: "user:r",
   };
   it("GenerateToken", () => {
     return pipe(
