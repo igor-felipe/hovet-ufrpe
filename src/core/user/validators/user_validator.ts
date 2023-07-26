@@ -1,11 +1,6 @@
 import { flow } from "fp-ts/lib/function";
 import { z } from "zod";
 
-export const userStatus = {
-  ENABLED: "enable",
-  DISABLED: "disabled",
-} as const;
-
 const M = {
   incorrectSize: (min: number, max: number) => ({
     message: `must be ${min} to ${max} Characters Long.`,
@@ -69,6 +64,13 @@ const passwordValidator = z
     M.noSpecialSymbolFound(),
   );
 
+const StatusValidator = z.nativeEnum({
+  ENABLED: "enable",
+  DISABLED: "disabled",
+} as const);
+
+export const userStatus = StatusValidator.enum;
+
 export const user = z
   .object({
     id: z.string().min(4, M.noEmpty()),
@@ -76,7 +78,7 @@ export const user = z
     email: z.string().email(),
     cpf: z.string().refine((val) => isCpf(val)),
     name: z.string().regex(/^.{10,100}$/, M.incorrectSize(10, 100)),
-    status: z.enum([userStatus.ENABLED, userStatus.DISABLED]),
+    status: StatusValidator,
     date: z
       .string()
       .refine((string) => new Date(string), M.invalidDate())
