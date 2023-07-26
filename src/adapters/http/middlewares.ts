@@ -53,7 +53,7 @@ export const guard = (input: {
   return pipe(
     input.rule.includes(`${resource}:${permission}`),
     TE.fromPredicate(
-      (e) => e === true,
+      (e) => e,
       () => new AuthError("unauthorized"),
     ),
   );

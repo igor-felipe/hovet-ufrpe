@@ -4,7 +4,10 @@ import { expectShouldBeLeft, expectShouldBeRight } from "@/config/test-helpers";
 import { prisma } from "../prisma";
 import * as rule from "./rule";
 import * as V from "@/core/rule/validators";
-import { permission } from "@/core/rule/validators/rule_validator";
+import {
+  permission,
+  resourceName,
+} from "@/core/rule/validators/rule_validator";
 
 const seed = async () => {
   const user = await prisma.user.create({
@@ -19,17 +22,11 @@ const seed = async () => {
       authId: "",
     },
   });
-  const resource = await prisma.resource.create({
-    data: {
-      id: 1,
-      name: "resource1",
-    },
-  });
 
   const input: V.CreateInDbInput = {
     permission: permission.READ,
     userId: user.id,
-    resourceName: resource.name,
+    resourceName: resourceName.USER,
   };
 
   const output: V.CreateInDbOutput = {
@@ -39,7 +36,7 @@ const seed = async () => {
     updatedAt: expect.any(Date),
   };
 
-  return { user, resource, input, output };
+  return { user, input, output };
 };
 
 const createMocks = () => ({
@@ -52,7 +49,6 @@ const createMocks = () => ({
 describe("Prisma Rule Repo", () => {
   beforeEach(async () => {
     await prisma.rule.deleteMany();
-    await prisma.resource.deleteMany();
     await prisma.user.deleteMany();
   });
 

@@ -28,18 +28,6 @@ model User {
   @@map("user")
 }
 
-model Resource {
-  id   Int    @id @default(autoincrement())
-  name String @unique
-
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-
-  Rule Rule[]
-
-  @@map("resource")
-}
-
 model Rule {
   id           Int    @id @default(autoincrement())
   userId       String
@@ -49,8 +37,7 @@ model Rule {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  user     User     @relation(fields: [userId], references: [id], onDelete: Cascade, onUpdate: Cascade)
-  resource Resource @relation(fields: [resourceName], references: [name], onDelete: Cascade, onUpdate: Cascade)
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade, onUpdate: Cascade)
 
   @@unique([userId, resourceName])
   @@map("rule")
@@ -104,7 +91,7 @@ model SurgicalProcedure {
 }
 
 model Animal {
-  id                   String                 @id @default(cuid()) // verificar o tipo do id
+  id                   String            @id @default(cuid()) // verificar o tipo do id
   name                 String?
   speciesId            Int
   birthDate            DateTime?
@@ -114,8 +101,8 @@ model Animal {
   ownerName            String
   surgery              Surgery[]
   consultation         Consultation[]
-  laboratoryExamReport LaboratoryExamReport[]
-  imageExamReport      ImageExamReport[]
+  laboratoryExamResult LabExamResult[]
+  imageExamResult      ImageExamResult[]
   necropsy             necropsy[]
   date                 DateTime
 
@@ -159,7 +146,7 @@ model ImageExam {
   name            String
   description     String
   classification  String // simple, complex
-  imageExamReport ImageExamReport[]
+  imageExamResult ImageExamResult[]
   date            DateTime
 
   createdAt DateTime @default(now())
@@ -168,12 +155,12 @@ model ImageExam {
   @@map("image_exam")
 }
 
-model LaboratoryExam {
-  id                   Int                    @id @default(autoincrement())
-  name                 String
-  description          String
-  LaboratoryExamReport LaboratoryExamReport[]
-  date                 DateTime
+model LabExam {
+  id            Int             @id @default(autoincrement())
+  name          String
+  description   String
+  LabExamResult LabExamResult[]
+  date          DateTime
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -181,7 +168,7 @@ model LaboratoryExam {
   @@map("laboratory_exam")
 }
 
-model LaboratoryExamReport {
+model LabExamResult {
   id               Int      @id @default(autoincrement())
   report           String
   animalId         String
@@ -191,13 +178,13 @@ model LaboratoryExamReport {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  animail        Animal         @relation(fields: [animalId], references: [id])
-  laboratoryExam LaboratoryExam @relation(fields: [laboratoryExamId], references: [id])
+  animail        Animal  @relation(fields: [animalId], references: [id])
+  laboratoryExam LabExam @relation(fields: [laboratoryExamId], references: [id])
 
   @@map("laboratory_exam_report")
 }
 
-model ImageExamReport {
+model ImageExamResult {
   id          Int      @id @default(autoincrement())
   report      String
   animalId    String
