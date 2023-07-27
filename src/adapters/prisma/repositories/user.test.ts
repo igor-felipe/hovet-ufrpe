@@ -104,6 +104,7 @@ describe("Prisma User Repo", () => {
       }),
     )();
   });
+
   it("should finding a user to login", () => {
     const { loginInDbMock, createInDbMock } = createMocks();
     return pipe(

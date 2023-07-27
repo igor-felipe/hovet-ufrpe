@@ -1,9 +1,9 @@
 import { z } from "zod";
 
 const permissionValidator = z.nativeEnum({
-  READ: "read",
-  WRITE: "write",
-  DELETE: "delete",
+  READ: "r",
+  WRITE: "w",
+  DELETE: "d",
 } as const);
 
 const resourceNameValidator = z.nativeEnum({
@@ -18,8 +18,8 @@ const resourceNameValidator = z.nativeEnum({
   NECROPSY: "necropsy",
   CONSULTATION: "consultation",
   SURGERY: "surgery",
-  LAB_EXAM_RESULT: "labExamResult",
-  IMAGE_EXAM_RESULT: "imageExamResult",
+  LAB_EXAM_LIST: "labExamList",
+  IMAGE_EXAM_LIST: "imageExamList",
 } as const);
 
 export const permission = permissionValidator.enum;
@@ -32,6 +32,7 @@ export const rule = z.object({
   resourceName: resourceNameValidator,
   createdAt: z.date(),
   updatedAt: z.date(),
+  authId: z.string().nonempty(),
 });
 
 export type Rule = z.infer<typeof rule>;

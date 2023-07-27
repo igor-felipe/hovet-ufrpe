@@ -6,7 +6,7 @@ generator client {
 }
 
 datasource db {
-  provider = "sqlite"
+  provider = "postgresql"
   url      = env("DATABASE_URL")
 }
 
@@ -16,28 +16,43 @@ model User {
   email    String   @unique
   cpf      String   @unique
   name     String
-  status   String // enum
+  status   String // enable or disable
   date     DateTime
-  authId   String
 
+  authId    String
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  Rule Rule[]
+  consultation          Consultation[]
+  surgery               Surgery[]
+  surgicalProcedureList SurgicalProcedureList[]
+  animal                Animal[]
+  species               Species[]
+  medicalSpecialty      MedicalSpecialty[]
+  imageExamList         ImageExamList[]
+  labExamList           LabExamList[]
+  labExam               LabExam[]
+  imageExam             ImageExam[]
+  necropsy              necropsy[]
+  animalOwner           AnimalOwner[]
+  rule                  Rule[]                  @relation("user")
+  auth                  Rule[]                  @relation("auth")
 
   @@map("user")
 }
 
 model Rule {
   id           Int    @id @default(autoincrement())
-  userId       String
   resourceName String
   permission   String // r, w, d -> (read, write, delete)
+  userId       String
 
+  authId    String
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  user User @relation(fields: [userId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  user User @relation("user", fields: [userId], references: [id])
+  auth User @relation("auth", fields: [authId], references: [id])
 
   @@unique([userId, resourceName])
   @@map("rule")
@@ -45,15 +60,17 @@ model Rule {
 
 model Consultation {
   id                 Int      @id @default(autoincrement())
-  date               DateTime
   animalId           String
   medicalSpecialtyId Int
   newCase            Boolean // new or retun
   procedureType      String // simple, complex, Intensive Care Unit
+  date               DateTime
 
+  authId    String
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
+  auth             User             @relation(fields: [authId], references: [id])
   animal           Animal           @relation(fields: [animalId], references: [id])
   medicalSpecialty MedicalSpecialty @relation(fields: [medicalSpecialtyId], references: [id])
 
@@ -66,50 +83,79 @@ model Surgery {
   surgicalProcedureId Int
   date                DateTime
 
+  authId    String
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  surgicalProcedure SurgicalProcedure @relation(fields: [surgicalProcedureId], references: [id])
-  animal            Animal            @relation(fields: [animalId], references: [id])
+  auth              User                  @relation(fields: [authId], references: [id])
+  surgicalProcedure SurgicalProcedureList @relation(fields: [surgicalProcedureId], references: [id])
+  animal            Animal                @relation(fields: [animalId], references: [id])
 
   @@map("surgery")
 }
 
-model SurgicalProcedure {
-  id          Int       @id @default(autoincrement())
-  name        String    @unique
+model SurgicalProcedureList {
+  id          Int      @id @default(autoincrement())
+  name        String   @unique
   description String
   type        String // simple, complex
   hide        Boolean
-  surgery     Surgery[]
-  date        DateTime
 
+  authId    String
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+
+  auth    User      @relation(fields: [authId], references: [id])
+  surgery Surgery[]
 
   @@map("surgical_procedure")
 }
 
-model Animal {
-  id                   String            @id @default(cuid()) // verificar o tipo do id
-  name                 String?
-  speciesId            Int
-  birthDate            DateTime?
-  sex                  String // enum
-  weight               Float
-  ownerCpf             String
-  ownerName            String
-  surgery              Surgery[]
-  consultation         Consultation[]
-  laboratoryExamResult LabExamResult[]
-  imageExamResult      ImageExamResult[]
-  necropsy             necropsy[]
-  date                 DateTime
+model AnimalOwner {
+  id           Int    @id @default(autoincrement())
+  name         String
+  phone        String
+  email        String
+  zipCode      String
+  street       String
+  number       String
+  complement   String
+  neighborhood String
+  city         String
+  uf           String
 
+  authId    String
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  species Species @relation(fields: [speciesId], references: [id])
+  animal Animal[]
+  auth   User     @relation(fields: [authId], references: [id])
+
+  @@map("animal_owner")
+}
+
+model Animal {
+  id        String   @id @default(nanoid())
+  oldId     Int?
+  name      String?
+  speciesId Int
+  birthDate DateTime
+  sex       String // M or F
+  weight    Float
+  date      DateTime
+
+  authId    String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  auth            User           @relation(fields: [authId], references: [id])
+  species         Species        @relation(fields: [speciesId], references: [id])
+  surgery         Surgery[]
+  consultation    Consultation[]
+  labExamResult   LabExam[]
+  imageExamResult ImageExam[]
+  necropsy        necropsy[]
+  animalOwner     AnimalOwner[]
 
   @@map("animal")
 }
@@ -119,11 +165,14 @@ model Species {
   name           String   @unique
   classification String // small animal, large animal, wild animal
   description    String
-  animal         Animal[]
-  date           DateTime
+  hide           Boolean
 
+  authId    String
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+
+  auth   User     @relation(fields: [authId], references: [id])
+  animal Animal[]
 
   @@map("species")
 }
@@ -135,81 +184,98 @@ model MedicalSpecialty {
   consultation   Consultation[]
   hide           Boolean
 
+  authId    String
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+
+  auth User? @relation(fields: [authId], references: [id])
 
   @@map("medical_specialty")
 }
 
-model ImageExam {
-  id              Int               @id @default(autoincrement())
+model ImageExamList {
+  id              Int         @id @default(autoincrement())
   name            String
   description     String
   classification  String // simple, complex
-  imageExamResult ImageExamResult[]
+  imageExamResult ImageExam[]
   date            DateTime
+  hide            Boolean
 
+  authId    String
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+
+  auth User @relation(fields: [authId], references: [id])
 
   @@map("image_exam")
 }
 
-model LabExam {
-  id            Int             @id @default(autoincrement())
-  name          String
-  description   String
-  LabExamResult LabExamResult[]
-  date          DateTime
-
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-
-  @@map("laboratory_exam")
-}
-
-model LabExamResult {
-  id               Int      @id @default(autoincrement())
-  report           String
-  animalId         String
-  laboratoryExamId Int
-  date             DateTime
-
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-
-  animail        Animal  @relation(fields: [animalId], references: [id])
-  laboratoryExam LabExam @relation(fields: [laboratoryExamId], references: [id])
-
-  @@map("laboratory_exam_report")
-}
-
-model ImageExamResult {
+model LabExamList {
   id          Int      @id @default(autoincrement())
-  report      String
+  name        String
+  description String
+  date        DateTime
+  hide        Boolean
+
+  authId    String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  auth    User      @relation(fields: [authId], references: [id])
+  labExam LabExam[]
+
+  @@map("lab_exam")
+}
+
+model LabExam {
+  id        Int      @id @default(autoincrement())
+  result    String
+  animalId  String
+  labExamId Int
+  date      DateTime
+
+  authId    String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  auth    User        @relation(fields: [authId], references: [id])
+  Animail Animal      @relation(fields: [animalId], references: [id])
+  labExam LabExamList @relation(fields: [labExamId], references: [id])
+
+  @@map("lab_exam_result")
+}
+
+model ImageExam {
+  id          Int      @id @default(autoincrement())
+  result      String
   animalId    String
   imageExamId Int
   date        DateTime
 
+  authId    String
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  imageExam ImageExam @relation(fields: [imageExamId], references: [id])
-  animail   Animal    @relation(fields: [animalId], references: [id])
+  auth      User          @relation(fields: [authId], references: [id])
+  imageExam ImageExamList @relation(fields: [imageExamId], references: [id])
+  animail   Animal        @relation(fields: [animalId], references: [id])
 
-  @@map("image_exam_report")
+  @@map("image_exam_result")
 }
 
 model necropsy {
   id       Int      @id @default(autoincrement())
   animalId String
-  report   String
+  result   String
   date     DateTime
 
+  authId    String
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  animal Animal? @relation(fields: [animalId], references: [id])
+  auth   User   @relation(fields: [authId], references: [id])
+  animal Animal @relation(fields: [animalId], references: [id])
 
   @@map("necropsy")
 }

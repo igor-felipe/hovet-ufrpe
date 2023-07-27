@@ -59,14 +59,14 @@ export const loginInDb: userRepo.LoginInDb = (where) =>
             id: true,
             password: true,
             status: true,
-            Rule: { select: { permission: true, resourceName: true } },
+            rule: { select: { permission: true, resourceName: true } },
           },
         }),
       (error) => toDatabaseError(error),
     ),
-    TE.map(({ Rule, ...user }) => ({
+    TE.map(({ rule, ...user }) => ({
       user,
-      rules: Rule,
+      rules: rule,
     })),
     TE.map((data) => data as V.LoginInDbOutput),
   );

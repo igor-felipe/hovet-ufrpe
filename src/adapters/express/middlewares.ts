@@ -7,8 +7,8 @@ export const authMiddleware = async (
   req: Request,
   res: Response,
   next: NextFunction,
-) => {
-  return req.path.includes("login")
+) =>
+  req.path.includes("login")
     ? next()
     : pipe(
         auth(req.header("authorization")),
@@ -27,4 +27,3 @@ export const authMiddleware = async (
         TE.map(() => next()),
         TE.mapLeft((result) => res.status(result.code).json(result.details)),
       )();
-};

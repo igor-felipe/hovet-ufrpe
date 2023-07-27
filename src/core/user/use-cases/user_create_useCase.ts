@@ -26,7 +26,6 @@ export const transform =
         password,
         email: data.email.toLowerCase(),
         status: userStatus.ENABLED,
-        authId: data.authId,
       })),
     );
 

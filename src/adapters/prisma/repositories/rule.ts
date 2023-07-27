@@ -12,12 +12,17 @@ export const createInDb: ruleRepo.CreateInDb = (data) =>
       () =>
         prisma.rule.create({
           data: {
+            permission: data.permission,
             user: {
               connect: {
                 id: data.userId,
               },
             },
-            permission: data.permission,
+            auth: {
+              connect: {
+                id: data.userId,
+              },
+            },
             resourceName: data.resourceName,
           },
         }),

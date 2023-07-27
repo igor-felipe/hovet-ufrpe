@@ -19,7 +19,7 @@ const seed = async () => {
       password: "",
       status: "",
       date: new Date(),
-      authId: "",
+      authId: "1",
     },
   });
 
@@ -27,6 +27,7 @@ const seed = async () => {
     permission: permission.READ,
     userId: user.id,
     resourceName: resourceName.USER,
+    authId: user.authId,
   };
 
   const output: V.CreateInDbOutput = {
